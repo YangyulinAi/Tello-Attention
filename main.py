@@ -24,19 +24,33 @@ finally:
     controller.land()
 
 """
+
+import subprocess
+import sys
+
+def install_and_import(package):
+    try:
+        __import__(package)
+    except ImportError:
+        print(f"{package} not found. Installing...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+        __import__(package)
+
+required_packages = ['pylsl','djitellopy']
+for package in required_packages:
+    install_and_import(package)
+
+import tkinter as tk
+import threading
 from eeg_app import EEGApp
 from attention_handler import AttentionHandler
 from tello_controller import TelloController
-import tkinter as tk
-import threading
-import asyncio #
-
 
 class MainApplication:
     def __init__(self):
         self.root = tk.Tk()
         self.app = EEGApp(self.root, self.handle_data, self.mode_change)
-        self.controller = TelloController(debug=False)
+        self.controller = TelloController(debug=True)
 
         self.channel = 0
         self.lower = 5
